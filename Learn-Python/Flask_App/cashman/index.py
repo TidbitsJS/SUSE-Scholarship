@@ -47,5 +47,26 @@ def add_expense():
     return "Expense Added!", 204
 
 
+@app.route('/amount')
+def get_amount():
+    expenseSchema = ExpenseSchema(many=True)
+    expense = expenseSchema.dump(
+        filter(lambda t: t.type == TransactionType.EXPENSE, transactions)
+    )
+
+    incomeSchema = IncomeSchema(many=True)
+    incomes = incomeSchema.dump(
+        filter(lambda t: t.type == TransactionType.INCOME, transactions)
+    )
+
+    totalAmount = expense + incomes
+    total = 0
+
+    for amount in totalAmount:
+        total = total + amount['amount']
+
+    return jsonify({"Total Amount": total})
+
+
 if __name__ == "__main__":
     app.run()
